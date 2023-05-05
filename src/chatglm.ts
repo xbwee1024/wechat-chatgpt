@@ -8,6 +8,7 @@ import fs from "fs";
 import DBUtils from "./data.js";
 import {config} from "./config.js";
 import fetch from "node-fetch";
+import axios from 'axios';
 
 const configuration = new Configuration({
   apiKey: config.openai_api_key,
@@ -15,17 +16,6 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-// Simple function to GET or POST
-function sendRequest(method: string, url:string, data:any, callback:(result:any)=>any) {
-  var xhr = new XMLHttpRequest();
-  xhr.open(method, url, true);
-  if (callback) xhr.onload = function() { callback(JSON.parse(this['responseText'])); };
-  if (data != null) {
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.send(JSON.stringify(data));
-  }
-  else xhr.send();
-}
 
 /**
  * Get completion from OpenAI
@@ -42,19 +32,27 @@ async function chatgpt(username:string,message: string): Promise<string> {
   //   messages: messages,
   //   temperature: config.temperature,
   // });
-  const url = 'http://36.137.246.102:9000/kbpredict?query=银行卡开卡';
-  let assistantMessage = "";
-  const params = new URLSearchParams();
-  params.append('query', '银行卡开卡');
-  const response = await fetch(url, {
-    method: 'POST',
-    body: params,
+  const instance = axios.create({
+    baseURL: 'http://36.137.246.102:9000',
+    timeout: 30000,
   });
-  const data = await response.json();
+  const response = await instance.post('/kbpredict', {
+    query: message
+  });
 
-  console.log(data);
-
-  return data;
+  let assistantMessage = "";
+  try {
+    if (response.status === 200) {
+      assistantMessage = response.data.response?.replace(/^\n+|\n+$/g, "") as string;
+    }else{
+      console.log(`Something went wrong,Code: ${response.status}, ${response.statusText}`)
+    }
+  }catch (e:any) {
+    if (e.request){
+      console.log("请求出错");
+    }
+  }
+  return assistantMessage;
 }
 
 /**
