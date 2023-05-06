@@ -7,7 +7,6 @@ import {
 import fs from "fs";
 import DBUtils from "./data.js";
 import {config} from "./config.js";
-import fetch from "node-fetch";
 import axios from 'axios';
 
 const configuration = new Configuration({
