@@ -34,10 +34,12 @@ async function chatgpt(username:string,message: string): Promise<string> {
   // });
   const instance = axios.create({
     baseURL: 'http://36.137.246.102:9000',
-    timeout: 30000,
+    timeout: 60000,
   });
-  const response = await instance.post('/kbpredict', {
-    query: message
+  const response = await instance.post('/kbpredict', {}, {
+    params: {
+      query: message
+    }
   });
 
   let assistantMessage = "";
