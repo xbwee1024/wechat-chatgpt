@@ -143,7 +143,7 @@ export class ChatGPTBot {
     if (config.chatgptBlockWords.length == 0) {
       return false;
     }
-    return config.chatgptBlockWords.some((word) => message.includes(word));
+    return config.chatgptBlockWords.split(',').some((word) => message.includes(word));
   }
   // The message is segmented according to its size
   async trySay(
@@ -186,10 +186,10 @@ export class ChatGPTBot {
   }
   // Check whether the message contains the blocked words. if so, the message will be ignored. if so, return true
   checkBlockWords(message: string): boolean {
-    if (config.blockWords.length == 0) {
+    if (!config.blockWords || config.blockWords.length === 0) {
       return false;
     }
-    return config.blockWords.some((word) => message.includes(word));
+    return config.blockWords.split(',').some((word) => message.includes(word));
   }
   // Filter out the message that does not need to be processed
   isNonsense(

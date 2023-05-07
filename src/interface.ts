@@ -7,8 +7,8 @@ export interface IConfig {
   chatTriggerRule: string;
   disableGroupMessage: boolean;
   temperature: number;
-  blockWords: string[];
-  chatgptBlockWords: string[];
+  blockWords: string;
+  chatgptBlockWords: string;
   chatPrivateTriggerKeyword: string;
 }
 export interface User {
