@@ -130,10 +130,10 @@ export class ChatGPTBot {
     // remove more text via - - - - - - - - - - - - - - -
     return text
   }
-  async getGPTMessage(talkerName: string,text: string): Promise<string> {
-    let gptMessage = await chatgpt(talkerName,text);
+  async getGPTMessage(talkerName: string, text: string): Promise<string> {
+    let gptMessage = await chatgpt(talkerName, text);
     if (gptMessage !=="") {
-      DBUtils.addAssistantMessage(talkerName,gptMessage);
+      DBUtils.addAssistantMessage(talkerName, gptMessage);
       return gptMessage;
     }
     return "Sorry, please try again later. 😔";
@@ -148,14 +148,13 @@ export class ChatGPTBot {
   // The message is segmented according to its size
   async trySay(
     talker: RoomInterface | ContactInterface,
-    mesasge: string
+    message: string
   ): Promise<void> {
     const messages: Array<string> = [];
-    if (this.checkChatGPTBlockWords(mesasge)) {
-      console.log(`🚫 Blocked ChatGPT: ${mesasge}`);
+    if (this.checkChatGPTBlockWords(message)) {
+      console.log(`🚫 Blocked ChatGPT: ${message}`);
       return;
     }
-    let message = mesasge;
     while (message.length > SINGLE_MESSAGE_MAX_SIZE) {
       messages.push(message.slice(0, SINGLE_MESSAGE_MAX_SIZE));
       message = message.slice(SINGLE_MESSAGE_MAX_SIZE);

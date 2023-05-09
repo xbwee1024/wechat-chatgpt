@@ -21,7 +21,7 @@ const openai = new OpenAIApi(configuration);
  * @param username
  * @param message
  */
-async function chatgpt(username:string,message: string): Promise<string> {
+async function chatgpt(username: string, message: string): Promise<string> {
   // 先将用户输入的消息添加到数据库中
   DBUtils.addUserMessage(username, message);
   const messages = DBUtils.getChatMessage(username);
@@ -32,19 +32,32 @@ async function chatgpt(username:string,message: string): Promise<string> {
   //   temperature: config.temperature,
   // });
   const instance = axios.create({
-    baseURL: 'http://36.137.246.102:9000',
+    baseURL: 'http://36.139.230.220:5011',
     timeout: 60000,
   });
-  const response = await instance.post('/kbpredict', {}, {
-    params: {
-      query: message
+  const data = {
+    "model": "chatglm-6b",
+    "messages": messages,
+    "temperature": config.temperature,
+    "top_p": 1.0,
+    "n": 1,
+    "stream": false,
+    "stop": ["DONE", "FINISH"],
+    "max_tokens": 2048,
+    "presence_penalty": 0,
+    "frequency_penalty": 0,
+    "logit_bias": {
+      "aaa": 50,
+      "bbb": -50,
+      "ccc": 0
     }
-  });
+  }
+  const response = await instance.post('/chat', data);
 
   let assistantMessage = "";
   try {
     if (response.status === 200) {
-      assistantMessage = response.data.response?.replace(/^\n+|\n+$/g, "") as string;
+      assistantMessage = response.data.choices[0].message?.content.replace(/^\n+|\n+$/g, "") as string;
     }else{
       console.log(`Something went wrong,Code: ${response.status}, ${response.statusText}`)
     }
